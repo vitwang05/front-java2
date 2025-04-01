@@ -9,10 +9,9 @@ const Orders = ({ url }) => {
 
     const fetchAllOrders = async () => {
         try {
-            const response = await axios.get(url + '/api/order/list');
-            if (response.data.success) {
-                setOrders(response.data.data);
-                console.log(response.data.data);
+            const response = await axios.get(`http://localhost:8081/food/order/getAllOrder`);
+            if (response.data.code === 1000) {
+                setOrders(response.data.result);
             } else {
                 toast.error("Error fetching orders");
             }
@@ -22,15 +21,20 @@ const Orders = ({ url }) => {
         }
     };
 
-    const statusHandler = async(event,orderId)=>{
-        const response = await axios.post(url+'/api/order/status',{
-            orderId,
-            status:event.target.value
-        })
-        if (response.data.success) {
-            await fetchAllOrders()
+    const statusHandler = async(event, orderId) => {
+        try {
+            const response = await axios.post(`http://localhost:8081/food/order/status`, {
+                orderId,
+                status: event.target.value
+            });
+            if (response.data.success) {
+                await fetchAllOrders();
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+            toast.error("Error updating status");
         }
-    }
+    };
 
     useEffect(() => {
         fetchAllOrders();
@@ -41,30 +45,23 @@ const Orders = ({ url }) => {
             <h3>Order Page</h3>
             <div className="order-list">
                 {orders.length > 0 ? (
-                    orders.map((order, index) => (
-                        <div key={index} className="order-item">
+                    orders.slice().reverse().map((order) => (
+                        <div key={order.id} className="order-item">
                             <img src={assets.parcel_icon} alt="Parcel Icon" />
                             <div>
                                 <p className="order-item-food" style={{ fontWeight: 'bold' }}>
-                                    {order.items.map((item, itemIndex) => (
+                                    {order.orderItems.map((item, itemIndex) => (
                                         <span key={itemIndex}>
-                                            {item.name} x {item.quantity}
-                                            {itemIndex !== order.items.length - 1 ? ", " : ""}
+                                            {item.foodName} x {item.quantity}
+                                            {itemIndex !== order.orderItems.length - 1 ? ", " : ""}
                                         </span>
                                     ))}
                                 </p>
-                                <p className='order-item-name' style={{ fontWeight: 'bold' }}>{order.address.firstName + " " + order.address.lastName}</p>
-                                <div className='order-item-address'>
-                                    <p>{order.address.street + ", "}</p>
-                                    <p>{order.address.city + ", " + order.address.state + ", " 
-                                        + order.address.country + ", " + order.address.zipcode}
-                                    </p>
-                                </div>
-                                <p className="order-item-phone">{order.address.phone}</p>
+                                <p className='order-item-name' style={{ fontWeight: 'bold' }}>{order.address}</p>
                             </div>
-                            <p>Item: {order.items.length}</p>
-                            <p>${order.amount}</p>
-                            <select onChange={(event)=>statusHandler(event,order._id)} value={order.state} name="" id="">
+                            <p>Total Items: {order.orderItems.length}</p>
+                            <p>${order.orderItems.reduce((total, item) => total + item.price * item.quantity, 0)}</p>
+                            <select onChange={(event) => statusHandler(event, order.id)} value={order.status}>
                                 <option value="Food Processing">Food Processing</option>
                                 <option value="Out for delivery">Out for delivery</option>
                                 <option value="Delivered">Delivered</option>
