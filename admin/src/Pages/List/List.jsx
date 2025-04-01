@@ -18,15 +18,18 @@ const List = ({url}) => {
         }
     }
 
-    const removeFood = async (foodId) => {
-        const response = await axios.post(`${url}/api/food/remove`, { id: foodId })
+   const removeFood = async (id) => {
+         console.log("Deleting food ID:", id);
+        const response = await axios.delete(`http://localhost:8081/food/foods/${id}`)
         await fetchList();
-        if (response.data.success) {
+        if (response.data.code === 1000) {
             toast.success(response.data.message)
+            window.location.reload();
         } else {
             toast.error("Error")
         }
     }
+
 
     useEffect(() => {
         fetchList()
@@ -50,7 +53,7 @@ const List = ({url}) => {
                             <p>{item.name}</p>
                             <p>{item.category}</p>
                             <p>${item.price}</p>
-                            <p onClick={() => removeFood(item._id)} className='cussor'>X</p>
+                            <p onClick={() => removeFood(item.id)} className='cussor'>X</p>
                         </div>
                     )
                 })}
