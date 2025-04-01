@@ -17,10 +17,10 @@ const Navbar = ({ setShowLogin }) => {
     const logout = () => {
         localStorage.removeItem("token")
         setToken("")
-        navigate('/')
+        navigate('/') 
     }
 
-    
+    console.log(token);
 
     return (
         <div className='navbar'>

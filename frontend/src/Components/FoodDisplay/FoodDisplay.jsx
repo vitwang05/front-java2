@@ -16,7 +16,7 @@ const FoodDisplay = ({ category }) => {
             })
             .catch(error => console.log("Error fetching data:", error));
     }, []);
-
+    console.log(foodList);
     return (
         <div className='food-display' id='food-display'> 
             <h2>Top dishes near you</h2>
