@@ -3,13 +3,15 @@ import "./LoginPopUp.css";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../Context/ShopContext";
 import axios from "axios";
+import {  useNavigate } from "react-router-dom";
 
 const LoginPopUp = ({ setShowLogin }) => {
   const { url, setToken } = useContext(StoreContext);
+    const navigate = useNavigate();
 
   const [currState, setCurrState] = useState("Login");
   const [data, setData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -25,13 +27,14 @@ const LoginPopUp = ({ setShowLogin }) => {
     let newUrl =
       currState === "Login"
         ? "http://localhost:8081/food/users/login"
-        : "http://localhost:8081/food/users/signup";
+        : "http://localhost:8081/food/users";
     console.log(newUrl);
     const response = await axios.post(newUrl, data);
     if (response.data.code === 1000) {
       localStorage.setItem("token", response.data.result.id);
       setShowLogin(false);
       alert("Đăng nhập thành công!");
+      navigate('/') 
     } else {
       alert(response.data.message);
     }
@@ -53,7 +56,7 @@ const LoginPopUp = ({ setShowLogin }) => {
             <></>
           ) : (
             <input
-              name="name"
+              name="username"
               onChange={onChangeHandler}
               value={data.username}
               type="text"

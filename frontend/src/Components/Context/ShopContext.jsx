@@ -79,7 +79,8 @@ const StoreContextProvider = (props) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
-      setToken(storedToken); // Nếu có token, đặt nó vào state
+      setToken(storedToken);
+      fetchFoodList(); // Nếu có token, đặt nó vào state
     }
   }, []);
 
