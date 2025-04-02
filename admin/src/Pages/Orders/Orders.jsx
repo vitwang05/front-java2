@@ -23,11 +23,8 @@ const Orders = ({ url }) => {
 
     const statusHandler = async(event, orderId) => {
         try {
-            const response = await axios.post(`http://localhost:8081/food/order/status`, {
-                orderId,
-                status: event.target.value
-            });
-            if (response.data.success) {
+            const response = await axios.post(`http://localhost:8081/food/order/update?id=${orderId}&status=${event.target.value}`);
+            if (response.data.code === 1000) {
                 await fetchAllOrders();
             }
         } catch (error) {
